@@ -351,12 +351,8 @@
 </div>
 
 <script>
-function encode(data) {
-  return Object.keys(data)
-    .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
-    .join("&");
-}
-
+var WEB3FORMS_KEY = "fefaf90a-9ee4-4823-8023-df115c494bf8";
+var GUIDE_NAME = "אני צריך לחשוב על זה";
 var leadName = "";
 var leadPhone = "";
 
@@ -365,16 +361,19 @@ function submitLead(e){
   var form = document.getElementById('formWrap');
   leadName = form.full_name.value;
   leadPhone = form.phone.value;
+
   var data = {
-    "form-name": "lead-form",
-    "full_name": leadName,
-    "phone": leadPhone
+    access_key: WEB3FORMS_KEY,
+    subject: "ליד חדש - מדריך: " + GUIDE_NAME,
+    name: leadName,
+    phone: leadPhone,
+    message: "ליד חדש הוריד את המדריך \"" + GUIDE_NAME + "\".\nשם: " + leadName + "\nטלפון: " + leadPhone
   };
 
-  fetch("/", {
+  fetch("https://api.web3forms.com/submit", {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: encode(data)
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    body: JSON.stringify(data)
   })
   .then(function(){ openGuide(); })
   .catch(function(){ openGuide(); }); // still show the guide even if the network call fails
@@ -395,16 +394,17 @@ function requestCall(btn){
   btn.textContent = "שולח...";
 
   var data = {
-    "form-name": "call-me-request",
-    "full_name": leadName || "לא צוין (מולא רק בקשה לשיחה)",
-    "phone": leadPhone || "לא צוין",
-    "source": "כפתור: כן תתקשרו אליי"
+    access_key: WEB3FORMS_KEY,
+    subject: "בקשה לשיחה - מדריך: " + GUIDE_NAME,
+    name: leadName || "לא צוין (מולא רק בקשה לשיחה)",
+    phone: leadPhone || "לא צוין",
+    message: "בקשה לשיחה חוזרת מתוך מדריך \"" + GUIDE_NAME + "\".\nשם: " + (leadName || "לא צוין") + "\nטלפון: " + (leadPhone || "לא צוין")
   };
 
-  fetch("/", {
+  fetch("https://api.web3forms.com/submit", {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: encode(data)
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    body: JSON.stringify(data)
   })
   .then(function(){
     btn.textContent = "נשלח! נחזור אליך בקרוב ✓";
